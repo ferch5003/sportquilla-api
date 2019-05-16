@@ -14,9 +14,10 @@ class CreatePhotosTable extends Migration
     public function up()
     {
         Schema::create('photos', function (Blueprint $table) {
-            $table->bigIncrements('cid');
+            $table->bigInteger('cid')->unsigned();
             $table->string('path',100);
 
+            $table->primary('cid');
         });
     }
 
