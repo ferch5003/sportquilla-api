@@ -22,8 +22,7 @@ class FieldController extends Controller
     {
         $input = $request->except('foto');
         $field = Field::create($input);
-        // $success['token'] =  $user->createToken('MyApp')->accessToken;
-        // $success['name'] =  $user->name;
+
         if($request->hasFile('foto')){
             $file = $request->file('foto');
             $extension = $file->getClientOriginalExtension();
@@ -53,7 +52,7 @@ class FieldController extends Controller
         foreach ($fields as $field) {
             foreach($photos as $photo){
                 if($field->cid == $photo->cid){
-                    $field->path = $photo->path;
+                    $field->ruta = $photo->ruta;
                     $total[] = array($field);
                     unset($photo);
                     break;
@@ -69,12 +68,17 @@ class FieldController extends Controller
      * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function show(Field $field)
+    public function show($cid)
     {
-        //
+        $field = Field::where('cid',$cid)->firstOrFail();
+        return response()->json(['cancha' => $field], 200);
     }
 
-
+    public function edit($cid)
+    {
+        $field = Field::where('cid',$cid)->firstOrFail();
+        return response()->json(['cancha' => $field], 200);
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -82,9 +86,42 @@ class FieldController extends Controller
      * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Field $field)
+    public function update(Request $request,  $cid)
     {
-        //
+        Field::findOrFail($cid)
+        ->update($request->except('foto'));
+
+        $newField = Field::where('cid',$cid)->firstOrFail();
+
+        if($request->has('foto')){
+            $file = $request->foto;
+            $extension = $file->getClientOriginalExtension();
+
+            $extensions = array('jpg', 'jpeg', 'png');
+            if(in_array($extension, $extensions)){
+                // Save image to the images folder
+                $name = time() . $file->getClientOriginalName();
+                $file->move(public_path() . '/images/', $name);
+
+                // Update photo in the table
+                if(Photo::where('cid', $cid)->first()){
+                    Photo::findOrFail($cid)
+                    ->update(array('ruta' => $name));
+                }else{
+                    $photo = new Photo();
+                    $photo->cid = $cid;
+                    $photo->ruta = $name;
+                    $photo->save();
+                }
+            }
+        }
+
+        if(Photo::where('cid',$cid)->first()){
+            $photo = Photo::where('cid',$cid)->first();
+            $newField->ruta = $photo->ruta;
+        }
+
+        return response()->json(['cancha' => $newField], 200);
     }
 
     /**
@@ -93,8 +130,16 @@ class FieldController extends Controller
      * @param  \App\Field  $field
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Field $field)
+    public function destroy($cid)
     {
-        //
+        $photo = Photo::where('cid',$cid)->first();
+        $path = $photo->ruta;
+        if(Photo::destroy($cid)){
+            $file_path = public_path() . '/images/' . $path;
+            \File::delete($file_path);
+        }
+        if(Field::destroy($cid)){
+            return response()->json(['exito' => 'La cancha se ha eliminado correctamente'], 200);
+        }
     }
 }
