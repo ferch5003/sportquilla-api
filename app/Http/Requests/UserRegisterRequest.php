@@ -32,10 +32,11 @@ class UserRegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'last_name' => 'required',
+            'nombre' => 'required',
+            'apellido' => 'required',
             'email' => 'required|email',
             'password' => 'required',
+            'celular' => 'numeric|nullable'
         ];
     }
 }

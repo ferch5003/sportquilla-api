@@ -16,8 +16,8 @@ class CreateReservationsTable extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('cid')->unsigned();
-            $table->date('begin_date');
-            $table->date('final_date');
+            $table->date('fecha_inicio');
+            $table->date('fecha_final');
 
             $table->foreign('cid')->references('cid')->on('fields');
         });

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Field;
 use App\Photo;
@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FieldStoreRequest;
 use Illuminate\Support\Facades\Auth;
-use Validator;
 
 class FieldController extends Controller
 {
@@ -21,35 +20,47 @@ class FieldController extends Controller
      */
     public function store(FieldStoreRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except('foto');
         $field = Field::create($input);
         // $success['token'] =  $user->createToken('MyApp')->accessToken;
         // $success['name'] =  $user->name;
-        if($request->hasFile("image")){
-            $file = $request->file('image');
+        if($request->hasFile('foto')){
+            $file = $request->file('foto');
             $extension = $file->getClientOriginalExtension();
 
             $extensions = array('jpg', 'jpeg', 'png');
             if(in_array($extension, $extensions)){
-                $filename = time().$file->getClientOriginalName();
-                Storage::disk('local')->putFileAs(
-                    'images/'.$filename,
-                    $file,
-                    $filename
-                );
+                // SAve image to the images folder
+                $name = time() . $file->getClientOriginalName();
+                $file->move(public_path() . '/images/', $name);
+
+                // SAve photo in the table
                 $photo = new Photo();
-                $photo->path = $filename;
+                $photo->ruta = $name;
                 $photo->cid = $field->cid;
                 $photo->save();
             }
         }
-        return response()->json(['success'=> 'User created'], 200);
+        return response()->json(['exito'=> 'Cancha creada'], 200);
     }
 
     public function showPlaces()
     {
-        $fields = Field::get();
-        $photo = Photo::whereIn('cid', $fields)->get();
+        $fields = Field::all();
+        $photos = Photo::all();
+
+        $total = array();
+        foreach ($fields as $field) {
+            foreach($photos as $photo){
+                if($field->cid == $photo->cid){
+                    $field->path = $photo->path;
+                    $total[] = array($field);
+                    unset($photo);
+                    break;
+                }
+            }
+        }
+        return response()->json(['canchas'=> $total], 200);
     }
 
     /**

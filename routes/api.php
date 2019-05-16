@@ -18,9 +18,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('login', 'API\UserController@login');
-Route::post('register', 'API\UserController@register');
+Route::post('registro', 'API\UserController@register');
+
+Route::resource('cancha', 'API\FieldController')->except([
+    'index', 'create', 'edit',
+]);
+
+Route::get('cancha', 'API\FieldController@showPlaces');
 
 Route::group(['middleware' => 'auth:api'], function(){
-Route::post('details', 'API\UserController@details');
-
+    Route::post('details', 'API\UserController@details');
 });

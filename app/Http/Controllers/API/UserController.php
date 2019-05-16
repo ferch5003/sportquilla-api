@@ -40,8 +40,8 @@ public $successStatus = 200;
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $success['token'] =  $user->createToken('MyApp')->accessToken;
-        $success['name'] =  $user->name;
-        return response()->json(['success'=>$success], $this->successStatus);
+        $success['nombre'] =  $user->nombre;
+        return response()->json(['exito'=>$success], $this->successStatus);
     }
 /**
      * details api

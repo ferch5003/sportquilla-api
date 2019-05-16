@@ -15,9 +15,10 @@ class CreatePhotosTable extends Migration
     {
         Schema::create('photos', function (Blueprint $table) {
             $table->bigInteger('cid')->unsigned();
-            $table->string('path',100);
+            $table->string('ruta',100);
 
             $table->primary('cid');
+            $table->foreign('cid')->references('cid')->on('fields');
         });
     }
 

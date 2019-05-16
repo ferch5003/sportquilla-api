@@ -32,13 +32,13 @@ class FieldStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'location' => 'required',
-            'image' => 'nullable',
-            'description' => 'required',
-            'rating' => 'required|integer',
-            'begin_time' => 'required|date_format:H:i',
-            'last_time' => 'required|date_format:H:i|after:last_time',
+            'nombre' => 'required',
+            'ubicacion' => 'required',
+            'foto' => 'nullable',
+            'descripcion' => 'required',
+            'puntaje' => 'required|integer',
+            'hora_inicio' => 'required|date_format:H:i',
+            'hora_final' => 'required|date_format:H:i|after:hora_inicio',
         ];
     }
 }
