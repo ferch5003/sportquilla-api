@@ -18,11 +18,13 @@ public $successStatus = 200;
      *
      * @return \Illuminate\Http\Response
      */
-    public function login(){
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-            $user = Auth::user();
-            $success['token'] =  $user->createToken('MyApp')-> accessToken;
-            return response()->json(['success' => $success], $this-> successStatus);
+    public function login(Request $request){
+        $user = User::where('email' , $request->email)
+        ->first();
+        $email = $request->email;
+        if($user && password_verify($request->password, $user->password)){
+            $user->email = $email;
+            return response()->json(['success' => $user], $this->successStatus);
         }
         else{
             return response()->json(['error'=>'Unauthorised'], 401);
@@ -38,9 +40,10 @@ public $successStatus = 200;
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')->accessToken;
-        $success['nombre'] =  $user->nombre;
-        return response()->json(['exito'=>$success], $this->successStatus);
+        //$success['token'] =  $user->createToken('MyApp')->accessToken;
+        $email = $request->email;
+        $user->email = $email;
+        return response()->json(['exito'=> $user], $this->successStatus);
     }
 
     public function update(Request $request, $id)
@@ -64,6 +67,6 @@ public $successStatus = 200;
     public function details()
     {
         $user = Auth::user();
-        return response()->json(['success' => $user], $this-> successStatus);
+        return response()->json(['success' => $user], $this->successStatus);
     }
 }

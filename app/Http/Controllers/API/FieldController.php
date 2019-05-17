@@ -56,6 +56,8 @@ class FieldController extends Controller
                     $total[] = array($field);
                     unset($photo);
                     break;
+                }else{
+                    $total[] = array($field);
                 }
             }
         }
