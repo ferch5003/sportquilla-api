@@ -23,6 +23,10 @@ Route::prefix('usuario')->group(function(){
     Route::patch('{id}', 'API\UserController@update');
 });
 
+Route::resource('reserva', 'API\ReservationController')->except([
+    'index', 'create', 'edit',
+]);
+
 Route::resource('cancha', 'API\FieldController')->except([
     'index', 'create', 'edit',
 ]);

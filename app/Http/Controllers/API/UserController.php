@@ -49,8 +49,8 @@ public $successStatus = 200;
         if(isset($input['password'])){
             $input['password'] = bcrypt($input['password']);
         }
-        // User::findOrFail($id)->
-        //     update($input);
+        User::findOrFail($id)->
+            update($input);
         $user = User::where('email',$id)->first();
         $success['token'] =  $user->createToken('MyApp')->accessToken;
         $success['nombre'] =  $user->nombre;
