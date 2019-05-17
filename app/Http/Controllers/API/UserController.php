@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRegisterRequest;
 use Illuminate\Support\Facades\Auth;
-use Validator;
 
 class UserController extends Controller
 {
@@ -43,7 +42,21 @@ public $successStatus = 200;
         $success['nombre'] =  $user->nombre;
         return response()->json(['exito'=>$success], $this->successStatus);
     }
-/**
+
+    public function update(Request $request, $id)
+    {
+        $input = $request->all();
+        if(isset($input['password'])){
+            $input['password'] = bcrypt($input['password']);
+        }
+        // User::findOrFail($id)->
+        //     update($input);
+        $user = User::where('email',$id)->first();
+        $success['token'] =  $user->createToken('MyApp')->accessToken;
+        $success['nombre'] =  $user->nombre;
+        return response()->json(['exito'=>$success], $this->successStatus);
+    }
+    /**
      * details api
      *
      * @return \Illuminate\Http\Response

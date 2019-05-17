@@ -17,8 +17,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', 'API\UserController@login');
-Route::post('registro', 'API\UserController@register');
+Route::prefix('usuario')->group(function(){
+    Route::post('login', 'API\UserController@login');
+    Route::post('registro', 'API\UserController@register');
+    Route::patch('{id}', 'API\UserController@update');
+});
 
 Route::resource('cancha', 'API\FieldController')->except([
     'index', 'create', 'edit',
