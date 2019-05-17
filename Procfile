@@ -1,1 +1,1 @@
-"web: vendor/bin/sprtquilla-api public/" 
+"web: vendor/bin/sportquilla-api public/" 
